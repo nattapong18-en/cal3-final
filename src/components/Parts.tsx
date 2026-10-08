@@ -3,6 +3,8 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Tex } from '../lib/Tex';
 import type { Palette } from '../lib/hooks';
 import type { FigureKind, Practice, Topic } from '../data/topics';
+import { Lesson } from './Lesson';
+import { lessons } from '../data/lessons';
 import { ChainDiagram, DerivTree, DirectionalFigure, LevelCurveFigure } from '../figures/Diagrams';
 
 const SliceSurface = lazy(() => import('../figures/Surfaces').then((m) => ({ default: m.SliceSurface })));
@@ -186,7 +188,7 @@ function ExampleCard({ ex }: { ex: Topic['examples'][number] }) {
   return (
     <motion.div className="card example" {...rise}>
       <div className="card-head">
-        <span className="eyebrow red">ตัวอย่าง · {ex.title}</span>
+        <span className="eyebrow red">ตัวอย่าง{ex.level ? ` · ระดับ${ex.level}` : ''} · {ex.title}</span>
         <span className="src">{ex.src}</span>
       </div>
       <Tex className="question" src={ex.q} />
@@ -211,6 +213,9 @@ export function TopicSection({ topic, p, done, toggle, onTeach }: { topic: Topic
           <PlayIcon /> สอนหัวข้อนี้
         </motion.button>
       </motion.header>
+
+      <Lesson id={topic.id} title={topic.title} blocks={lessons[topic.id]} done={!!done[`L-${topic.id}`]}
+        onFinish={() => { if (!done[`L-${topic.id}`]) toggle(`L-${topic.id}`); }} />
 
       <div className="topic-grid">
         <motion.div className="card concept" {...rise}>
@@ -242,6 +247,7 @@ export function TopicSection({ topic, p, done, toggle, onTeach }: { topic: Topic
         </ol>
       </motion.div>
 
+      <h3 className="sub-h">ตัวอย่าง {topic.examples.length} ข้อ <span className="muted small">เรียงจากง่ายไปยาก</span></h3>
       {topic.examples.map((ex, i) => <ExampleCard key={i} ex={ex} />)}
 
       <div className="side-by-side">

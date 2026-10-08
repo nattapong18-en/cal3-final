@@ -3,6 +3,8 @@ import { useMemo, useState } from 'react';
 import { Tex } from '../lib/Tex';
 import { flashcards, ruleGroups, values } from '../data/formulas';
 import { PlayIcon, ease, rise } from './Parts';
+import { Lesson } from './Lesson';
+import { lessons } from '../data/lessons';
 
 export const flashIds = flashcards.map((_, i) => `fc${i}`);
 
@@ -23,6 +25,9 @@ export function FormulaSection({ done, toggle, onTeach }: { done: Record<string,
       <motion.div {...rise}>
         <Tex className="muted" src={"ทุกข้อในข้อสอบต้อง diff ให้ถูกก่อน ในตาราง $u$ คือฟังก์ชันข้างใน และ $u'$ คืออนุพันธ์ของ $u$ แต่ละสูตรมีตัวอย่างการใช้กับอนุพันธ์ย่อยให้ดูคู่กัน"} />
       </motion.div>
+
+      <Lesson id="rules" title="ทบทวนการดิฟตั้งแต่ต้น" blocks={lessons.rules} done={!!done['L-rules']}
+        onFinish={() => { if (!done['L-rules']) toggle('L-rules'); }} />
 
       <motion.div className="card rules" {...rise}>
         <div className="tabs" role="tablist">

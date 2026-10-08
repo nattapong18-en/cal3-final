@@ -6,11 +6,14 @@ import type { Palette } from '../lib/hooks';
 import { mock, topics, type Practice, type Topic } from '../data/topics';
 import { Answer, Figure, StepItem, ease } from './Parts';
 import { ruleGroups, type RuleGroup } from '../data/formulas';
+import { lessons, type LessonBlock } from '../data/lessons';
+import { CheckBlock, SayBlock } from './Lesson';
 
 type Slide =
   | { kind: 'cover' }
   | { kind: 'topic'; topic: Topic }
   | { kind: 'rules'; g: RuleGroup }
+  | { kind: 'lesson'; key: string; title: string; b: LessonBlock; n: number; step: number; total: number }
   | { kind: 'concept'; topic: Topic }
   | { kind: 'recipe'; topic: Topic }
   | { kind: 'example'; topic: Topic; i: number }
@@ -21,11 +24,18 @@ type Slide =
 export function buildDeck(): { slides: Slide[]; starts: Record<string, number> } {
   const slides: Slide[] = [{ kind: 'cover' }];
   const starts: Record<string, number> = {};
+  const pushLesson = (key: string, title: string) => {
+    let k = 0;
+    lessons[key].forEach((b, i) => slides.push({ kind: 'lesson', key, title, b, n: b.kind === 'say' ? ++k : 0, step: i + 1, total: lessons[key].length }));
+  };
   starts.rules = slides.length;
+  pushLesson('rules', 'ทบทวนการดิฟ');
   ruleGroups.forEach((g) => slides.push({ kind: 'rules', g }));
   topics.forEach((topic) => {
     starts[topic.id] = slides.length;
-    slides.push({ kind: 'topic', topic }, { kind: 'concept', topic }, { kind: 'recipe', topic });
+    slides.push({ kind: 'topic', topic });
+    pushLesson(topic.id, `ข้อ ${topic.num}`);
+    slides.push({ kind: 'concept', topic }, { kind: 'recipe', topic });
     topic.examples.forEach((_, i) => slides.push({ kind: 'example', topic, i }));
     slides.push({ kind: 'traps', topic });
     topic.practice.forEach((p, i) => slides.push({ kind: 'practice', topic, p, label: `แบบฝึก ${topic.num}.${i + 1}` }));
@@ -39,6 +49,7 @@ export function buildDeck(): { slides: Slide[]; starts: Record<string, number> }
 function fragCount(s: Slide) {
   switch (s.kind) {
     case 'rules': return s.g.rules.length - 1;
+    case 'lesson': return 0;
     case 'concept': return s.topic.concept.points.length;
     case 'recipe': return s.topic.recipe.length - 1;
     case 'example': return s.topic.examples[s.i].steps.length;
@@ -55,6 +66,7 @@ function labelOf(s: Slide) {
     case 'practice': return s.label;
     case 'topic': return `ข้อ ${s.topic.num} · ${s.topic.title}`;
     case 'rules': return `สูตรการดิฟ · ${s.g.title}`;
+    case 'lesson': return `${s.title} · เรียนทีละขั้น ${s.step}/${s.total}`;
     case 'recipe': return `ข้อ ${s.topic.num} · วิธีทำ`;
     case 'concept': return `ข้อ ${s.topic.num} · ${s.topic.concept.eyebrow}`;
     case 'example': return `ข้อ ${s.topic.num} · ${s.topic.examples[s.i].src}`;
@@ -98,6 +110,13 @@ function SlideBody({ s, f, p }: { s: Slide; f: number; p: Palette }) {
           <motion.div className="d-figure" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15, duration: 0.55, ease }}>
             <Figure kind={s.topic.figure} p={p} />
           </motion.div>
+        </div>
+      );
+    case 'lesson':
+      return (
+        <div className="d-col d-lesson">
+          <span className="eyebrow violet">{s.title} · เรียนทีละขั้น {s.step}/{s.total}</span>
+          {s.b.kind === 'say' ? <SayBlock b={s.b} n={s.n} /> : <CheckBlock key={s.step + s.key} b={s.b} solved={false} onSolved={() => {}} big />}
         </div>
       );
     case 'rules':

@@ -1,12 +1,14 @@
 // เนื้อหาทั้งหมดของเว็บ
 // - $...$ สูตรในบรรทัด, $$...$$ สูตรแยกบรรทัด, **...** ไฮไลต์
 // - แต่ละขั้นของวิธีทำเขียนเป็น "หัวข้อขั้น::คำอธิบายและสูตร"
+import { extraExamples } from './lessons';
+
 const t = String.raw;
 
 export type FigureKind = 'slice' | 'tree' | 'chain2' | 'chain3' | 'direction' | 'level';
 
 export type Practice = { id: string; src?: string; q: string; hint?: string; sol: string[]; answer: string };
-export type Example = { src: string; title: string; q: string; steps: string[]; answer: string };
+export type Example = { src: string; title: string; q: string; steps: string[]; answer: string; level?: 'ง่าย' | 'กลาง' | 'แนวข้อสอบ' };
 export type Topic = {
   id: string;
   num: number;
@@ -619,6 +621,12 @@ export const topics: Topic[] = [
     ],
   },
 ];
+
+// ตัวอย่างเพิ่ม (ง่าย → กลาง) มาก่อนตัวอย่างแนวข้อสอบจากสไลด์
+topics.forEach((tp) => {
+  tp.examples.forEach((e) => { e.level ??= 'แนวข้อสอบ'; });
+  tp.examples.unshift(...(extraExamples[tp.id] ?? []));
+});
 
 /* ============================ ข้อสอบจำลอง ============================ */
 export const mock: Practice[] = [

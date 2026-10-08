@@ -38,9 +38,9 @@ export default function App() {
 
   const groups: Record<string, string[]> = useMemo(() => {
     const g: Record<string, string[]> = {};
-    topics.forEach((t) => (g[t.id] = t.practice.map((x) => x.id)));
+    topics.forEach((t) => (g[t.id] = [`L-${t.id}`, ...t.practice.map((x) => x.id)]));
     g.mock = mock.map((x) => x.id);
-    g.rules = flashIds;
+    g.rules = ['L-rules', ...flashIds];
     return g;
   }, []);
   const pctOf = (id: string) => Math.round((groups[id].filter((x) => done[x]).length / groups[id].length) * 100);
