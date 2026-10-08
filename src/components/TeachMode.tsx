@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { Tex } from '../lib/Tex';
 import type { Palette } from '../lib/hooks';
 import { mock, topics, type Practice, type Topic } from '../data/topics';
+import { hard } from '../data/hard';
 import { Answer, Figure, StepItem, ease } from './Parts';
 import { ruleGroups, type RuleGroup } from '../data/formulas';
 import { lessons, type LessonBlock } from '../data/lessons';
@@ -40,6 +41,8 @@ export function buildDeck(): { slides: Slide[]; starts: Record<string, number> }
     slides.push({ kind: 'traps', topic });
     topic.practice.forEach((p, i) => slides.push({ kind: 'practice', topic, p, label: `แบบฝึก ${topic.num}.${i + 1}` }));
   });
+  starts.drill = slides.length;
+  hard.forEach((p, i) => slides.push({ kind: 'practice', p, label: `โจทย์ยาก H${i + 1} · ${p.src}` }));
   starts.mock = slides.length;
   mock.forEach((p) => slides.push({ kind: 'practice', p, label: `ข้อสอบจำลอง ${p.src}` }));
   slides.push({ kind: 'end' });

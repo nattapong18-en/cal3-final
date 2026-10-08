@@ -5,10 +5,12 @@ import { usePalette, useProgress, useTheme } from './lib/hooks';
 import { PlayIcon, PracticeCard, Timer, TopicSection, ease, rise } from './components/Parts';
 import { TeachMode, buildDeck } from './components/TeachMode';
 import { FormulaSection, flashIds } from './components/Formulas';
+import { DrillSection } from './components/Drill';
+import { hard } from './data/hard';
 
 const HeroSurface = lazy(() => import('./figures/Surfaces').then((m) => ({ default: m.HeroSurface })));
 
-const sections = [{ id: 'rules', num: 'ƒ′', title: 'สูตรการดิฟ' }, ...topics.map((t) => ({ id: t.id, num: String(t.num), title: t.title })), { id: 'mock', num: '★', title: 'ข้อสอบจำลอง' }];
+const sections = [{ id: 'rules', num: 'ƒ′', title: 'สูตรการดิฟ' }, { id: 'drill', num: '✎', title: 'ฝึกพื้นฐาน' }, ...topics.map((t) => ({ id: t.id, num: String(t.num), title: t.title })), { id: 'mock', num: '★', title: 'ข้อสอบจำลอง' }];
 
 function Ring({ pct, num }: { pct: number; num: string }) {
   const full = pct >= 100;
@@ -41,6 +43,7 @@ export default function App() {
     topics.forEach((t) => (g[t.id] = [`L-${t.id}`, ...t.practice.map((x) => x.id)]));
     g.mock = mock.map((x) => x.id);
     g.rules = ['L-rules', ...flashIds];
+    g.drill = hard.map((h) => h.id);
     return g;
   }, []);
   const pctOf = (id: string) => Math.round((groups[id].filter((x) => done[x]).length / groups[id].length) * 100);
@@ -159,6 +162,8 @@ export default function App() {
           </motion.section>
 
           <FormulaSection done={done} toggle={toggle} onTeach={() => setTeach(starts.rules)} />
+
+          <DrillSection p={p} done={done} toggle={toggle} onTeach={() => setTeach(starts.drill)} />
 
           {topics.map((t) => (
             <TopicSection key={t.id} topic={t} p={p} done={done} toggle={toggle} onTeach={() => setTeach(starts[t.id])} />
