@@ -1,5 +1,13 @@
 # ติวแคล 3 ปลายภาค
 
-เว็บทบทวนและติวแคลคูลัส 3 (31100222) ปลายภาค ปีการศึกษา 2568 มี 6 หัวข้อตามแนวข้อสอบ พร้อมโหมดสอนแบบสไลด์
+เว็บทบทวนและติวแคลคูลัส 3 (31100222) ปลายภาค มี 6 หัวข้อตามแนวข้อสอบ สูตรการดิฟ เฉลยทีละขั้น และโหมดสอนแบบสไลด์
 
-เปิดใช้งาน: https://nattapong18-en.github.io/cal3-final/
+React + Vite + Framer Motion + KaTeX + three.js
+
+```
+npm install
+npm run dev      # เปิดดูในเครื่อง
+npm run build    # ได้ไฟล์ใน dist/
+```
+
+Deploy บน Cloudflare: build command `npm run build`, deploy command `npx wrangler deploy` (ตั้งค่าใน `wrangler.jsonc`)
